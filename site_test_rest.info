@@ -1,0 +1,7 @@
+name = Site Test REST
+description = Test REST client by mocking responses.
+core = 7.x
+package = Other
+version = 7.x-1
+dependencies[] = simpletest
+files[] = site_rest_test_case.php

@@ -22,8 +22,8 @@ trait SiteRestTestCase {
    */
   protected function restSetUp() {
     // Create a file name based on current test id.
-    $filename = 'temporary://site_test_rest_response_' . $suffix . '.txt';
     $suffix = implode('_', [$this->testId, time(), rand(pow(10, 2), pow(10, 3))]);
+    $filename = 'temporary://site_test_rest_response_' . $suffix . '.json';
     // Set filename to a variable to pass it to the client in SUT.
     variable_set('site_test_rest_response_file', $filename);
     $this->refreshVariablesRunner();
@@ -193,7 +193,8 @@ class SiteTestRestObjectStorage {
       $this->filename = $filename;
     }
     else {
-      $this->filename = 'temporary://site_test_storage' . rand(pow(10, 5), pow(10, 6)) . '.txt';
+      $suffix = implode('_', [time(), rand(pow(10, 2), pow(10, 3))]);
+      $this->filename = 'temporary://site_test_rest_response_' . $suffix . '.json';
     }
     $this->initFile();
   }
@@ -314,14 +315,16 @@ class SiteTestRestObjectStorage {
    * Export object for writing.
    */
   protected function export($object) {
-    return serialize($object);
+    return json_encode($object, JSON_PRETTY_PRINT);
   }
 
   /**
    * Import object after reading.
    */
   protected function import($data) {
-    return unserialize($data);
+    return json_decode($data);
+  }
+
   /**
    * Check whether object value matches criteria.
    *

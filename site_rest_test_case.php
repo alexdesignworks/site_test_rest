@@ -157,12 +157,12 @@ class SiteTestRestHttpMockClient {
       'url' => $request->url,
       'method' => $request->method,
     ];
+
     $response = $this->responseStorage->search($search_criteria);
 
-    // For not found response, return 'server internal error' response.
     if (!$response) {
       $response = (object) [
-        'code' => 500,
+        'code' => 404,
         'data' => t('Mocked test response was not found in storage for URL !url and method @method. Please make sure that setResponse() has correct path set, including URL query parameters.', [
           '!url' => $request->url,
           '@method' => $request->method,

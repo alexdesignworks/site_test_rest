@@ -203,8 +203,10 @@ class SiteTestRestObjectStorage {
    * Destructor.
    */
   public function __destruct() {
-    // Delete storage file.
-    if (is_file($this->filename)) {
+    // Delete storage file, but only if it is called from within a test.
+    // It can also be called by any other outside processes that result in
+    // error.
+    if (is_file($this->filename) && count(debug_backtrace(FALSE)) > 2) {
       unlink($this->filename);
     }
   }
@@ -305,8 +307,11 @@ class SiteTestRestObjectStorage {
    *   empty array if there was a problem while retrieving objects.
    */
   public function getAll() {
-    $contents = file_get_contents($this->filename);
-    $objects = $this->import($contents);
+    $objects = NULL;
+    if (is_readable($this->filename)) {
+      $contents = file_get_contents($this->filename);
+      $objects = $this->import($contents);
+    }
 
     return !$objects || !is_array($objects) ? [] : $objects;
   }

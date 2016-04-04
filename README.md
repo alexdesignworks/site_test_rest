@@ -66,6 +66,7 @@ class MyRestTest {
    * Test some feature.
    */
   public function testFeature() {
+    // Entities that are expected to be returned in REST response.
     $mocked_entities = [
       (object) [
         'id' => 1,
@@ -75,13 +76,12 @@ class MyRestTest {
       ],
     ];
 
-    $url = 'expected/request/url';
     $this->setResponse(
       // Expected Request parameters that mymodule_some_rest_request()
       // will perform.
       [
         'method' => 'GET',
-        'url' => $url,
+        'url' => 'expected/request/url',
       ],
       // Mocked response to be returned.
       [

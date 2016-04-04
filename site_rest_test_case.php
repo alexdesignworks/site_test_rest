@@ -22,8 +22,8 @@ trait SiteRestTestCase {
    */
   protected function restSetUp() {
     // Create a file name based on current test id.
-    $suffix = $this->testId;
     $filename = 'temporary://site_test_rest_response_' . $suffix . '.txt';
+    $suffix = implode('_', [$this->testId, time(), rand(pow(10, 2), pow(10, 3))]);
     // Set filename to a variable to pass it to the client in SUT.
     variable_set('site_test_rest_response_file', $filename);
     $this->refreshVariablesRunner();

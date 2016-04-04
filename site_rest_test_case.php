@@ -163,7 +163,10 @@ class SiteTestRestHttpMockClient {
     if (!$response) {
       $response = (object) [
         'code' => 500,
-        'data' => NULL,
+        'data' => t('Mocked test response was not found in storage for URL !url and method @method. Please make sure that setResponse() has correct path set, including URL query parameters.', [
+          '!url' => $request->url,
+          '@method' => $request->method,
+        ]),
       ];
     }
     unset($response->criteria);
@@ -244,7 +247,7 @@ class SiteTestRestObjectStorage {
    *   Object to store.
    *
    * @return bool|int
-   *  Number of bytes that were written to the file, or FALSE on failure.
+   *   Number of bytes that were written to the file, or FALSE on failure.
    */
   public function add($object) {
     $contents = $this->getAll();
@@ -277,7 +280,7 @@ class SiteTestRestObjectStorage {
     $match = FALSE;
     foreach ($objects as $object) {
       foreach ($criteria_properties as $criteria_property) {
-        if (property_exists($object->criteria, $criteria_property) && ($object->criteria->{$criteria_property} === $criteria->{$criteria_property})) {
+        if (property_exists($object->criteria, $criteria_property) && $this->criteriaMatches($object->criteria->{$criteria_property}, $criteria->{$criteria_property})) {
           $match = TRUE;
         }
         else {
@@ -319,6 +322,35 @@ class SiteTestRestObjectStorage {
    */
   protected function import($data) {
     return unserialize($data);
+  /**
+   * Check whether object value matches criteria.
+   *
+   * @param mixed $object_value
+   *   Object value to check for a criteria match. If string, can be a valid
+   *   regular expression or a string value.
+   * @param mixed $criteria_value
+   *   Criteria value to match to.
+   *
+   * @return bool
+   *   TRUE if value matches criteria, FALSE otherwise.
+   */
+  protected function criteriaMatches($object_value, $criteria_value) {
+    if ($this->isRegex($object_value)) {
+      return (bool) preg_match($object_value, $criteria_value);
+    }
+
+    return $object_value === $criteria_value;
+  }
+
+  /**
+   * Check that provided value is a regex.
+   */
+  protected function isRegex($value) {
+    if (!is_string($value)) {
+      return FALSE;
+    }
+
+    return (bool) preg_match('/^\/.+\/[a-z]*$/i', $value);
   }
 
 }
